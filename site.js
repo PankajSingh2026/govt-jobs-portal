@@ -34,30 +34,20 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function syncWithServerTime() {
-    // Public HTTPS time services. Two sources are tried in order, so a
-    // single service going down doesn't silently break the clock again.
-    // Both return real-world UTC time regardless of the visitor's own
-    // device clock.
-    tryTimeSource("https://time.now/developer/api/timezone/Etc/UTC", function (data) {
-      return data.datetime; // includes explicit UTC offset
-    }).catch(function () {
-      return tryTimeSource("https://timeapi.io/api/Time/current/zone?timeZone=UTC", function (data) {
-        return data.dateTime + "Z"; // no offset in response, so we add one
-      });
-    }).catch(function () {
-      // Both sources failed (offline, blocked, both services down, etc.)
-      // — fall back to the device's own clock.
-      offsetMs = 0;
-    });
-  }
-
-  function tryTimeSource(url, extractDateTime) {
-    return fetch(url)
+    // Public HTTPS time service (timeapi.io). Returns real-world UTC
+    // time regardless of what the visitor's own device clock says.
+    // Fetching UTC specifically (not a named zone) avoids any ambiguity
+    // in how the browser parses the returned timestamp.
+    fetch("https://time.now/api/Time/current/zone?timeZone=UTC")
       .then(function (res) { return res.json(); })
       .then(function (data) {
-        var serverNow = new Date(extractDateTime(data)).getTime();
-        if (isNaN(serverNow)) throw new Error("Unparseable time response");
+        var serverNow = new Date(data.dateTime + "Z").getTime(); // "Z" = explicit UTC
         offsetMs = serverNow - Date.now();
+      })
+      .catch(function () {
+        // If the time API is unreachable (offline, blocked, service down,
+        // etc.), silently fall back to the device's own clock.
+        offsetMs = 0;
       });
   }
 
