@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title id="page-title">Government Jobs Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Sarkari Job Netra</title>
 <link rel="stylesheet" href="../styles.css">
+<link rel="icon" type="image/svg+xml" href="../logo.svg">
 </head>
 <body>
 
@@ -18,10 +20,11 @@
 
   <div class="masthead-row">
     <div class="brand">
-      <div class="seal"></div>
+      <img src="../logo.svg" alt="Sarkari Job Netra" class="seal-icon">
       <div class="brand-text">
-        <h1>Government Jobs Portal</h1>
-        <div class="tricolor"></div>
+        <h1>Sarkari Job Netra</h1>
+        <div class="tagline">सरकारी नौकरी पर हर नज़र</div>
+          <div class="tricolor"></div>
       </div>
     </div>
     <div class="masthead-right"></div>
@@ -49,9 +52,13 @@
 </main>
 
 <footer class="page-footer">
-  © 2026 Government Jobs Portal — for official information always cross-check with the respective department's website.
+  © 2026 Sarkari Job Netra — for official information always cross-check with the respective department's website.
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="../firebase-config.js"></script>
 <script src="../site-data.js"></script>
 <script src="../site.js"></script>
 <script>
@@ -80,13 +87,18 @@ function optionalSteps(heading, items) {
   return '<div class="info-table-wrap"><h3>' + heading + '</h3><ol class="steps-list">' + body + '</ol></div>';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const params = new URLSearchParams(window.location.search);
   const cat = params.get("cat");
   const id = params.get("id");
   const main = document.getElementById("detail-main");
 
-  const post = (cat && id) ? getPost(cat, id) : null;
+  let post = null;
+  try {
+    post = (cat && id) ? await getPost(cat, id) : null;
+  } catch (e) {
+    console.error("Failed to load posting", e);
+  }
 
   if (!post) {
     main.innerHTML =
@@ -96,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  document.getElementById("page-title").textContent = post.title + " — Government Jobs Portal";
+  document.getElementById("page-title").textContent = post.title + " — Sarkari Job Netra";
   document.getElementById("crumb-category").textContent = CATEGORY_LABELS[cat] || cat;
   document.getElementById("crumb-title").textContent = post.title;
 

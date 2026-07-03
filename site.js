@@ -34,17 +34,19 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function syncWithServerTime() {
-    // Public HTTPS time service (worldtimeapi.org). Returns real-world
+    // Public HTTPS time service (timeapi.io). Returns real-world UTC
     // time regardless of what the visitor's own device clock says.
-    fetch("https://worldtimeapi.org/api/timezone/Asia/Kolkata")
+    // Fetching UTC specifically (not a named zone) avoids any ambiguity
+    // in how the browser parses the returned timestamp.
+    fetch("https://timeapi.io/api/Time/current/zone?timeZone=UTC")
       .then(function (res) { return res.json(); })
       .then(function (data) {
-        var serverNow = new Date(data.datetime).getTime();
+        var serverNow = new Date(data.dateTime + "Z").getTime(); // "Z" = explicit UTC
         offsetMs = serverNow - Date.now();
       })
       .catch(function () {
-        // If the time API is unreachable (offline, blocked, etc.),
-        // silently fall back to the device's own clock.
+        // If the time API is unreachable (offline, blocked, service down,
+        // etc.), silently fall back to the device's own clock.
         offsetMs = 0;
       });
   }

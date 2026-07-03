@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Devanagari:wght@500;600&display=swap');
 
 :root{
   --ink:#14213D;
@@ -63,24 +63,17 @@ body{
   padding:22px 24px 16px;
 }
 .brand{ display:flex; align-items:center; gap:14px; }
-.seal{
-  width:46px; height:46px; border-radius:50%;
-  border:2px solid var(--ink);
-  position:relative; flex:none;
+.seal-icon{
+  width:52px; height:52px; flex:none;
 }
-.seal::before{
-  content:"";
-  position:absolute; inset:7px;
-  border:1px solid var(--ink);
-  border-radius:50%;
+.brand-text .tagline{
+  font-family:'Noto Sans Devanagari', 'IBM Plex Sans', sans-serif;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  letter-spacing:.01em;
 }
-.seal::after{
-  content:"GJP";
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Playfair Display', serif; font-weight:900;
-  font-size:11px; color:var(--ink); letter-spacing:.03em;
-}
+/* .seal-icon replaces the old CSS-drawn badge — see styles above */
 .brand-text h1{
   margin:0;
   font-family:'Playfair Display', serif;
