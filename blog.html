@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Blog — Government Jobs Portal</title>
+<link rel="stylesheet" href="styles.css">
+<script src="site.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="utility-row">
+      <div class="utility-left">
+        <span id="live-date">Thursday, July 2, 2026</span>
+        <span id="live-time" style="margin-left:10px;">12:00 PM</span>
+        <!-- <span class="updates">Today's updates: <b>128</b> new notifications</span> -->
+      </div>
+      <div class="utility-right">
+        <!-- <div class="lang-toggle">
+        <span class="active">EN</span>
+        <span>हिं</span>
+      </div>
+      <button class="login-btn">LOG IN</button> -->
+      </div>
+    </div>
+
+    <div class="masthead-row">
+      <div class="brand">
+        <div class="seal"></div>
+        <div class="brand-text">
+          <h1>Government Jobs Portal</h1>
+          <div class="tricolor"></div>
+        </div>
+      </div>
+      <div class="masthead-right">
+        <div class="search-box">
+          <!-- <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search jobs, exams, results…  -->
+        </div>
+        <!-- <button class="apply-btn">Apply Online</button> -->
+      </div>
+    </div>
+
+  <nav class="primary-nav">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="latest-jobs.html">Latest Jobs</a></li>
+      <li><a href="admit-card.html">Admit Card</a></li>
+      <li><a href="results.html">Results</a></li>
+      <li><a href="syllabus.html">Syllabus</a></li>
+      <li><a href="answer-key.html">Answer Key</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="admission.html">Admission</a></li>
+      <li><a href="miscellaneous.html">Miscellaneous</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="breadcrumb"><a href="index.html">Home</a> / Blog</div>
+
+<main style="border-top:none;">
+  <section class="content-section">
+    <div class="section-heading">
+      <h2>Blog</h2>
+    </div>
+
+    <!-- Filled live by site-render.js using data saved in admin.html -->
+    <div class="headline-static-grid" data-category="blog" data-link-prefix="pages/" data-detail-page="blog-post.html"></div>
+  </section>
+</main>
+
+<footer class="page-footer">
+  © 2026 Government Jobs Portal — for official information always cross-check with the respective department's website.
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="site-data.js"></script>
+<script src="site-render.js"></script>
+</body>
+</html>

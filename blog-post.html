@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title id="page-title">Blog — Government Jobs Portal</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .article-body{ padding:22px 24px 40px; font-size:15.5px; line-height:1.8; color:var(--ink-soft); max-width:760px; }
+  .article-body p{ margin:0 0 18px; }
+  .article-body h1, .article-body h2, .article-body h3{ font-family:'Playfair Display', serif; color:var(--ink); margin:26px 0 12px; }
+  .article-body h1{ font-size:26px; } .article-body h2{ font-size:22px; } .article-body h3{ font-size:19px; }
+  .article-body ul, .article-body ol{ margin:0 0 18px; padding-left:22px; }
+  .article-body li{ margin-bottom:8px; }
+  .article-body blockquote{ margin:0 0 18px; padding:10px 18px; border-left:3px solid var(--saffron); color:var(--muted); font-style:italic; }
+  .article-body a{ color:var(--saffron); }
+  .article-body strong{ color:var(--ink); }
+  .article-meta-row{ padding:14px 24px 20px; border-bottom:1px solid var(--hairline); font-size:12.5px; color:var(--muted); }
+  .article-meta-row b{ color:var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="utility-row">
+    <div class="utility-left">
+      <span id="live-date">Thursday, July 2, 2026</span>
+      <span id="live-time" style="margin-left:10px;">12:00 PM</span>
+    </div>
+    <div class="utility-right"></div>
+  </div>
+
+  <div class="masthead-row">
+    <div class="brand">
+      <div class="seal"></div>
+      <div class="brand-text">
+        <h1>Government Jobs Portal</h1>
+        <div class="tricolor"></div>
+      </div>
+    </div>
+    <div class="masthead-right"></div>
+  </div>
+
+  <nav class="primary-nav">
+    <ul>
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../latest-jobs.html">Latest Jobs</a></li>
+      <li><a href="../admit-card.html">Admit Card</a></li>
+      <li><a href="../results.html">Results</a></li>
+      <li><a href="../syllabus.html">Syllabus</a></li>
+      <li><a href="../results.html">Answer Key</a></li>
+      <li><a href="../blog.html">Blog</a></li>
+      <li><a href="../admission.html">Admission</a></li>
+      <li><a href="../miscellaneous.html">Miscellaneous</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="breadcrumb"><a href="../index.html">Home</a> / <a href="../blog.html">Blog</a> / <span id="crumb-title"></span></div>
+
+<main style="border-top:none;" id="detail-main">
+  <!-- Filled in by JavaScript below, based on ?id= in the URL -->
+</main>
+
+<footer class="page-footer">
+  © 2026 Government Jobs Portal — for official information always cross-check with the respective department's website.
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="../firebase-config.js"></script>
+<script src="../site-data.js"></script>
+<script src="../site.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const main = document.getElementById("detail-main");
+
+  let post = null;
+  try {
+    post = id ? await getPost("blog", id) : null;
+  } catch (e) {
+    console.error("Failed to load blog post", e);
+  }
+
+  if (!post) {
+    main.innerHTML =
+      '<div class="detail-header"><h1>Post not found</h1></div>' +
+      '<div class="detail-body"><p><a href="../blog.html">← Back to Blog</a></p></div>';
+    return;
+  }
+
+  document.getElementById("page-title").textContent = post.title + " — Government Jobs Portal";
+  document.getElementById("crumb-title").textContent = post.title;
+
+  let html = '<div class="detail-header"><h1>' + post.title + '</h1></div>';
+
+  html += '<div class="article-meta-row">';
+  if (post.author) html += '<span><b>By ' + post.author + '</b></span> &nbsp;·&nbsp; ';
+  if (post.postDate) html += '<span>' + post.postDate + '</span>';
+  html += '</div>';
+
+  html += '<div class="article-body">' + (post.content || '') + '</div>';
+
+  main.innerHTML = html;
+});
+</script>
+
+</body>
+</html>

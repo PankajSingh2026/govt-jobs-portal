@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Government Jobs Portal — Nav</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<script src="site.js"></script>
+
+<body>
+
+  <header class="site-header">
+
+    <div class="utility-row">
+      <div class="utility-left">
+        <span id="live-date">Thursday, July 2, 2026</span>
+        <span id="live-time" style="margin-left:10px;">12:00 PM</span>
+        <!-- <span class="updates">Today's updates: <b>128</b> new notifications</span> -->
+      </div>
+      <div class="utility-right">
+        <!-- <div class="lang-toggle">
+        <span class="active">EN</span>
+        <span>हिं</span>
+      </div>
+      <button class="login-btn">LOG IN</button> -->
+      </div>
+    </div>
+
+    <div class="masthead-row">
+      <div class="brand">
+        <div class="seal"></div>
+        <div class="brand-text">
+          <h1>Government Jobs Portal</h1>
+          <div class="tricolor"></div>
+        </div>
+      </div>
+      <div class="masthead-right">
+        <div class="search-box">
+          <!-- <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search jobs, exams, results…  -->
+        </div>
+        <!-- <button class="apply-btn">Apply Online</button> -->
+      </div>
+    </div>
+
+    <nav class="primary-nav">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li>
+          <a href="latest-jobs.html">Latest Jobs <span class="caret"></span></a>
+          <!--<div class="dropdown">
+          <a href="pages/latest-jobs.html">Central Govt Jobs</a>
+          <a href="pages/latest-jobs.html">State Govt Jobs</a>
+          <a href="pages/latest-jobs.html">Bank Jobs</a>
+          <a href="pages/latest-jobs.html">Railway Jobs</a>
+        </div> -->
+        </li>
+        <li><a href="admit-card.html">Admit Card</a></li>
+        <li>
+          <a href="results.html">Results <span class="caret"></span></a>
+          <!-- <div class="dropdown">
+          <a href="pages/results.html">Exam Results</a>
+          <a href="pages/results.html">Merit Lists</a>
+          <a href="pages/results.html">Cut-off Marks</a>
+        </div> -->
+        </li>
+        <li><a href="syllabus.html">Syllabus</a></li>
+        <li><a href="answer-key.html">Answer Key</a></li>
+        <li>
+          <a href="blog.html">Blog <span class="caret"></span></a>
+          <!-- <div class="dropdown">
+          <a href="pages/miscellaneous.html">/a>
+          <a href="pages/miscellaneous.html">College Admission</a>
+        </div> -->
+        </li>
+        <li><a href="admission.html">Admission</a></li>
+        <li><a href="miscellaneous.html">Miscellaneous</a></li>
+      </ul>
+    </nav>
+
+  </header>
+
+  <main>
+
+    <!-- ===== Scrolling ticker (right → left) ===== -->
+    <div class="ticker-wrap" data-category="latest-jobs" data-link-prefix="pages/">
+      <div class="ticker-label"><span class="dot"></span> Live Updates</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track">
+          <a href="pages/job-detail.html?cat=latest-jobs&id=ssc-jobs">SSC CGL 2026 Recruitment — 8,411 Posts, apply before 20 Jul</a>
+          <a href="pages/job-detail.html?cat=latest-jobs&id=sbi-po">SBI PO Online Form 2026 now open</a>
+          <a href="pages/job-template.html">RRB NTPC Notification closing in 2 days</a>
+          <!-- <a href="pages/job-template.html">SBI PO Mains Admit Card released today</a>
+          <a href="pages/job-template.html">NEET UG 2026 Result declared — check now</a> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Admit Card ticker — place above the Admit Card section heading ===== -->
+    <div class="ticker-wrap" data-category="admit-card" data-link-prefix="pages/">
+      <div class="ticker-label"><span class="dot"></span> Admit Card</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track">
+          <a href="pages/job-template.html">UPSC Civil Services Prelims Admit Card — download open</a>
+          <a href="pages/job-template.html">SBI PO Mains Admit Card 2026 released today</a>
+          <a href="pages/job-template.html">CTET July 2026 Hall Ticket now available</a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ===== Result ticker — place above the Results section heading ===== -->
+    <div class="ticker-wrap" data-category="results" data-link-prefix="pages/">
+      <div class="ticker-label"><span class="dot"></span> Result</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track">
+          <a href="pages/job-template.html">NEET UG 2026 Result Declared — check now</a>
+          <a href="pages/job-template.html">RRB Group D Final Result — merit list out</a>
+          <a href="pages/job-template.html">State PSC Prelims Cut-off Marks released</a>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ===== Answer Key ticker — place above the Answer Key section heading ===== -->
+    <div class="ticker-wrap" data-category="results" data-link-prefix="pages/">
+      <div class="ticker-label"><span class="dot"></span> Answer Key</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track">
+          <a href="pages/job-template.html">SSC CGL Tier-1 Answer Key — objections open</a>
+          <a href="pages/job-template.html">IBPS Clerk Prelims Answer Key released</a>
+          <a href="pages/job-template.html">RRB NTPC CBT-1 Answer Key available</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Admission ticker — place above the Admission section heading ===== -->
+    <div class="ticker-wrap" data-category="admission" data-link-prefix="pages/">
+      <div class="ticker-label"><span class="dot"></span> Admission</div>
+      <div class="ticker-viewport">
+        <div class="ticker-track">
+          <a href="pages/job-template.html">SSC CGL 2026 Admission Process</a>
+          <a href="pages/job-template.html">SBI PO 2026 Admission Process</a>
+          <a href="pages/job-template.html">IBPS Clerk 2026 Admission Process</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Latest Jobs ===== -->
+    <section class="content-section" id="latest-jobs">
+      <div class="section-heading">
+        <h2>Latest Jobs</h2>
+        <a class="view-all" href="latest-jobs.html">View all Latest Jobs →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="latest-jobs" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== Admit Card ===== -->
+    <section class="content-section" id="admit-card">
+      <div class="section-heading">
+        <h2>Admit Card</h2>
+        <a class="view-all" href="admit-card.html">View all Admit Card →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="admit-card" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== Results ===== -->
+    <section class="content-section" id="results">
+      <div class="section-heading">
+        <h2>Results</h2>
+        <a class="view-all" href="results.html">View all Results →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="results" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== Syllabus ===== -->
+    <section class="content-section" id="syllabus">
+      <div class="section-heading">
+        <h2>Syllabus</h2>
+        <a class="view-all" href="syllabus.html">View all Syllabus →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="syllabus" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+<!-- ===== Admission ===== -->
+    <section class="content-section" id="admission">
+      <div class="section-heading">
+        <h2>Admission</h2>
+        <a class="view-all" href="admission.html">View all Admission →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="admission" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+    <!-- ===== Miscellaneous ===== -->
+    <section class="content-section" id="miscellaneous">
+      <div class="section-heading">
+        <h2>Miscellaneous</h2>
+        <a class="view-all" href="miscellaneous.html">View all Miscellaneous →</a>
+      </div>
+      <div class="headline-scroll grid-bottom-rule" data-category="miscellaneous" data-link-prefix="pages/" data-limit="4">
+        <div class="headline-scroll-track"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="page-footer">
+    © 2026 Government Jobs Portal — for official information always cross-check with the respective department's
+    website.
+  </footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="site-data.js"></script>
+<script src="site-render.js"></script>
+</body>
+
+</html>

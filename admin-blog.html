@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Blog Admin — Government Jobs Portal</title>
+<link rel="stylesheet" href="styles.css">
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<style>
+  #editor-container{ margin-top:6px; }
+  #editor-container .ql-toolbar{ border:1px solid var(--hairline); font-family:inherit; }
+  #editor-container .ql-container{ border:1px solid var(--hairline); border-top:none; font-family:inherit; font-size:14px; min-height:280px; }
+  #editor-container .ql-editor{ min-height:280px; }
+</style>
+</head>
+<body>
+
+<div id="lock-screen" class="admin-lock">
+  <h2 style="font-family:'Playfair Display',serif;margin:0;">Blog Admin Login</h2>
+  <p style="font-size:13px;color:var(--muted);">Sign in with the same admin account you use for admin.html.</p>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Password">
+  <button class="admin-btn primary" onclick="tryLogin()">Sign In</button>
+  <p id="login-error" style="color:#B3261E;font-size:12.5px;display:none;"></p>
+</div>
+
+<div id="admin-app" class="admin-wrap" style="display:none;">
+
+  <div class="admin-header">
+    <h1>Blog Admin</h1>
+    <span style="font-size:12.5px;color:var(--muted);">
+      Signed in as <b id="whoami"></b> ·
+      <a href="#" onclick="doLogout(); return false;" style="color:var(--saffron);">Sign out</a>
+      · <a href="admin.html" style="color:var(--ink-soft);">Job postings admin →</a>
+    </span>
+  </div>
+
+  <div class="admin-panel">
+
+    <!-- LEFT: existing posts -->
+    <div class="admin-sidebar">
+      <label style="margin-top:0;">Blog Posts</label>
+      <div id="post-list">Loading…</div>
+      <button class="admin-btn secondary" style="width:100%;margin-top:14px;" onclick="newPost()">+ New Post</button>
+    </div>
+
+    <!-- RIGHT: edit form -->
+    <div class="admin-form-box">
+
+      <label>Title</label>
+      <input type="text" id="f-title" oninput="autoSlug()">
+
+      <label>URL-friendly ID (auto-generated, editable)</label>
+      <input type="text" id="f-id">
+      <div class="admin-hint">Used in the link: pages/blog-post.html?cat=blog&id=...</div>
+
+      <label>Author</label>
+      <input type="text" id="f-author" placeholder="e.g. Editorial Team">
+
+      <label>Post Date</label>
+      <input type="text" id="f-postDate" placeholder="e.g. 02 Jul 2026">
+
+      <label>Tag (shown on the listing, e.g. "Guide")</label>
+      <input type="text" id="f-meta" placeholder="e.g. Guide">
+
+      <label>Tag style</label>
+      <select id="f-metaClass">
+        <option value="">Normal (grey)</option>
+        <option value="new">New (green dot)</option>
+        <option value="urgent">Urgent (red)</option>
+      </select>
+
+      <label>Article Content</label>
+      <div id="editor-container">
+        <div id="editor"></div>
+      </div>
+
+      <div class="admin-actions">
+        <button class="admin-btn primary" onclick="savePost()">Save</button>
+        <button class="admin-btn secondary" onclick="newPost()">Clear / New</button>
+        <button class="admin-btn secondary" style="border-color:#B3261E;color:#B3261E;" onclick="deleteCurrentPost()">Delete</button>
+      </div>
+
+      <div class="admin-preview-link" id="preview-link-wrap" style="display:none;">
+        Preview this post: <a id="preview-link" href="#" target="_blank">Open live page →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="admin-toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="site-data.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
+<script>
+const CAT = "blog"; // this dashboard only ever touches the blog category
+
+const quill = new Quill('#editor', {
+  theme: 'snow',
+  placeholder: 'Write your article here — use the toolbar for headings, bold, lists, links...',
+  modules: {
+    toolbar: [
+      [{ header: [2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['blockquote', 'link'],
+      ['clean']
+    ]
+  }
+});
+
+function tryLogin(){
+  const errEl = document.getElementById("login-error");
+  errEl.style.display = "none";
+
+  if (typeof firebase === "undefined") {
+    errEl.textContent = "Firebase SDK failed to load — check your internet connection.";
+    errEl.style.display = "block";
+    return;
+  }
+  if (typeof auth === "undefined") {
+    errEl.textContent = "firebase-config.js didn't load correctly — make sure it's in the same folder as this file.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(function(err){
+      errEl.textContent = err.code + ": " + err.message;
+      errEl.style.display = "block";
+    });
+}
+
+function doLogout(){
+  auth.signOut();
+}
+
+try {
+  auth.onAuthStateChanged(function(user){
+    if (user){
+      document.getElementById("lock-screen").style.display = "none";
+      document.getElementById("admin-app").style.display = "block";
+      document.getElementById("whoami").textContent = user.email;
+      refreshPostList();
+    } else {
+      document.getElementById("lock-screen").style.display = "block";
+      document.getElementById("admin-app").style.display = "none";
+    }
+  });
+} catch (e) {
+  console.error("Firebase did not initialize correctly:", e);
+  document.getElementById("login-error").textContent = "Firebase did not initialize — check the browser console (F12) for details.";
+  document.getElementById("login-error").style.display = "block";
+}
+
+let currentId = null; // null = creating a new post
+
+function autoSlug(){
+  if (currentId === null){
+    document.getElementById("f-id").value = slugify(document.getElementById("f-title").value);
+  }
+}
+
+function linesToText(items){ return (items || []).join("\n"); }
+function textToLines(text){ return text.split("\n").map(function(l){return l.trim();}).filter(Boolean); }
+
+async function refreshPostList(){
+  const list = document.getElementById("post-list");
+  list.innerHTML = "Loading…";
+  let posts;
+  try {
+    posts = await getCategoryPosts(CAT);
+  } catch(e){
+    list.innerHTML = '<div style="font-size:12px;color:#B3261E;">Failed to load: ' + e.message + '</div>';
+    return;
+  }
+  if (posts.length === 0){
+    list.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:8px 6px;">No blog posts yet.</div>';
+    return;
+  }
+  list.innerHTML = posts.map(function(p){
+    return '<div class="admin-post-item"><span>' + p.title + '</span><span>' +
+      '<button class="edit-btn" onclick="loadPost(\'' + p.id + '\')">Edit</button>' +
+      '<button class="del-btn" onclick="quickDelete(\'' + p.id + '\')">Delete</button>' +
+      '</span></div>';
+  }).join("");
+}
+
+function newPost(){
+  currentId = null;
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-id").value = "";
+  document.getElementById("f-author").value = "";
+  document.getElementById("f-postDate").value = "";
+  document.getElementById("f-meta").value = "";
+  document.getElementById("f-metaClass").value = "";
+  quill.setContents([]);
+  document.getElementById("preview-link-wrap").style.display = "none";
+}
+
+async function loadPost(id){
+  const post = await getPost(CAT, id);
+  if (!post) return;
+  currentId = post.id;
+  document.getElementById("f-title").value = post.title || "";
+  document.getElementById("f-id").value = post.id || "";
+  document.getElementById("f-author").value = post.author || "";
+  document.getElementById("f-postDate").value = post.postDate || "";
+  document.getElementById("f-meta").value = post.meta || "";
+  document.getElementById("f-metaClass").value = post.metaClass || "";
+  quill.root.innerHTML = post.content || "";
+  showPreviewLink(post.id);
+}
+
+function showPreviewLink(id){
+  const wrap = document.getElementById("preview-link-wrap");
+  const link = document.getElementById("preview-link");
+  link.href = "pages/blog-post.html?cat=blog&id=" + encodeURIComponent(id);
+  wrap.style.display = "inline-block";
+}
+
+async function savePost(){
+  const title = document.getElementById("f-title").value.trim();
+  const id = document.getElementById("f-id").value.trim() || slugify(title);
+  if (!title || !id){
+    showToast("Please enter a title.");
+    return;
+  }
+
+  const post = Object.assign(emptyPost(), {
+    id: id,
+    title: title,
+    author: document.getElementById("f-author").value.trim(),
+    postDate: document.getElementById("f-postDate").value.trim(),
+    meta: document.getElementById("f-meta").value.trim(),
+    metaClass: document.getElementById("f-metaClass").value,
+    content: quill.root.innerHTML
+  });
+
+  try {
+    await upsertPost(CAT, post);
+  } catch(e) {
+    showToast("Save failed: " + e.message);
+    return;
+  }
+  currentId = id;
+  document.getElementById("f-id").value = id;
+  await refreshPostList();
+  showPreviewLink(id);
+  showToast("Saved. Refresh blog.html or the preview link to see it live.");
+}
+
+async function quickDelete(id){
+  if (!confirm("Delete this blog post?")) return;
+  try {
+    await deletePost(CAT, id);
+  } catch(e) {
+    showToast("Delete failed: " + e.message);
+    return;
+  }
+  if (currentId === id) newPost();
+  await refreshPostList();
+  showToast("Deleted.");
+}
+
+function deleteCurrentPost(){
+  if (!currentId){ showToast("Nothing to delete — this is a new, unsaved post."); return; }
+  quickDelete(currentId);
+}
+
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.display = "block";
+  setTimeout(function(){ toast.style.display = "none"; }, 3200);
+}
+</script>
+
+</body>
+</html>

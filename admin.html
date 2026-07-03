@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard — Government Jobs Portal</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Real login now, via Firebase Authentication (the email/password
+     you created in the Firebase console). Not a fake gate. -->
+<div id="lock-screen" class="admin-lock">
+  <h2 style="font-family:'Playfair Display',serif;margin:0;">Admin Login</h2>
+  <p style="font-size:13px;color:var(--muted);">Sign in with the admin account you created in Firebase.</p>
+  <input type="email" id="login-email" placeholder="Email">
+  <input type="password" id="login-password" placeholder="Password">
+  <button class="admin-btn primary" onclick="tryLogin()">Sign In</button>
+  <p id="login-error" style="color:#B3261E;font-size:12.5px;display:none;"></p>
+</div>
+
+<div id="admin-app" class="admin-wrap" style="display:none;">
+
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <span style="font-size:12.5px;color:var(--muted);">
+      Signed in as <b id="whoami"></b> ·
+      <a href="#" onclick="doLogout(); return false;" style="color:var(--saffron);">Sign out</a>
+      · <a href="admin-blog.html" style="color:var(--ink-soft);">Blog admin →</a>
+    </span>
+  </div>
+
+  <div id="seed-banner" style="display:none;margin-bottom:16px;padding:12px 16px;background:var(--hover-bg);border:1px solid var(--hairline);font-size:13px;">
+    No data found in Firestore yet.
+    <button class="admin-btn secondary" style="padding:6px 14px;font-size:12px;" onclick="runSeed()">Load original site content</button>
+  </div>
+
+  <div class="admin-panel">
+
+    <!-- LEFT: category + existing posts -->
+    <div class="admin-sidebar">
+      <label style="margin-top:0;">Category</label>
+      <select id="category-select" onchange="refreshPostList()">
+        <option value="latest-jobs">Latest Jobs</option>
+        <option value="admit-card">Admit Card</option>
+        <option value="results">Results</option>
+        <option value="syllabus">Syllabus</option>
+        <option value="admission">Admission</option>
+        <option value="miscellaneous">Miscellaneous</option>
+        <option value="blog">Blog</option>
+      </select>
+
+      <div id="post-list">Loading…</div>
+
+      <button class="admin-btn secondary" style="width:100%;margin-top:14px;" onclick="newPost()">+ New Posting</button>
+    </div>
+
+    <!-- RIGHT: edit form -->
+    <div class="admin-form-box">
+
+      <label>Title (headline)</label>
+      <input type="text" id="f-title" oninput="autoSlug()">
+
+      <label>URL-friendly ID (auto-generated, editable)</label>
+      <input type="text" id="f-id">
+      <div class="admin-hint">Used in the link: pages/job-detail.html?cat=...&id=...</div>
+
+      <label>Meta tag (shown under the headline, e.g. "Last date: 20 Jul 2026")</label>
+      <input type="text" id="f-meta">
+
+      <label>Meta style</label>
+      <select id="f-metaClass">
+        <option value="">Normal (grey)</option>
+        <option value="new">New (green dot)</option>
+        <option value="urgent">Urgent (red)</option>
+      </select>
+
+      <label>Organization</label>
+      <input type="text" id="f-organization">
+
+      <label>Author (Blog only)</label>
+      <input type="text" id="f-author" placeholder="e.g. Editorial Team">
+
+      <label>Post Date</label>
+      <input type="text" id="f-postDate" placeholder="e.g. 02 Jul 2026">
+
+      <label>Last Date to Apply</label>
+      <input type="text" id="f-lastDate" placeholder="e.g. 20 Jul 2026">
+
+      <label>Intro paragraph</label>
+      <textarea id="f-intro"></textarea>
+
+      <label>Full Article Content (Blog only) — one paragraph per line</label>
+      <textarea id="f-content" style="min-height:140px;" placeholder="First paragraph of the article.&#10;Second paragraph of the article.&#10;Third paragraph..."></textarea>
+
+      <label>Short Details (Quick Facts) — one "Label: Value" per line</label>
+      <textarea id="f-quickFacts" placeholder="Organization: Staff Selection Commission&#10;Total Posts: 8,411"></textarea>
+
+      <label>Important Dates — one "Label: Value" per line</label>
+      <textarea id="f-importantDates" placeholder="Application Begin: 02 Jul 2026&#10;Last Date for Apply Online: 20 Jul 2026"></textarea>
+
+      <label>Application Fee — one "Label: Value" per line</label>
+      <textarea id="f-fee" placeholder="General / OBC / EWS: ₹100/-&#10;SC / ST / PwD: Exempted"></textarea>
+
+      <label>Age Limit — one "Label: Value" per line</label>
+      <textarea id="f-ageLimit" placeholder="Minimum Age: 18 Years&#10;Maximum Age: 32 Years"></textarea>
+
+      <label>Vacancy Details — one "Label: Value" per line</label>
+      <textarea id="f-vacancy" placeholder="Post Name: Assistant&#10;Total Posts: 8,411"></textarea>
+
+      <label>How to Apply — one step per line</label>
+      <textarea id="f-howToApply" placeholder="Read the official notification.&#10;Complete registration and fill the form."></textarea>
+
+      <label>Selection Process — one step per line</label>
+      <textarea id="f-selectionProcess" placeholder="Tier-1 (CBE)&#10;Tier-2 (CBE)&#10;Document Verification"></textarea>
+
+      <label>Apply Online link</label>
+      <input type="text" id="f-applyLink" placeholder="https://...">
+
+      <label>Notification PDF link</label>
+      <input type="text" id="f-notificationLink" placeholder="https://...">
+
+      <label>Official Website link</label>
+      <input type="text" id="f-officialWebsite" placeholder="https://...">
+
+      <div class="admin-actions">
+        <button class="admin-btn primary" onclick="savePost()">Save</button>
+        <button class="admin-btn secondary" onclick="newPost()">Clear / New</button>
+        <button class="admin-btn secondary" style="border-color:#B3261E;color:#B3261E;" onclick="deleteCurrentPost()">Delete</button>
+      </div>
+
+      <div class="admin-preview-link" id="preview-link-wrap" style="display:none;">
+        Preview this posting: <a id="preview-link" href="#" target="_blank">Open live page →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="admin-toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="site-data.js"></script>
+<script>
+function tryLogin(){
+  const errEl = document.getElementById("login-error");
+  errEl.style.display = "none";
+
+  if (typeof firebase === "undefined") {
+    errEl.textContent = "Firebase SDK failed to load — check your internet connection and that the script tags in this file aren't blocked.";
+    errEl.style.display = "block";
+    return;
+  }
+  if (typeof auth === "undefined") {
+    errEl.textContent = "firebase-config.js didn't load correctly — make sure it's saved in the same folder as this file.";
+    errEl.style.display = "block";
+    return;
+  }
+
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(function(err){
+      errEl.textContent = err.code + ": " + err.message;
+      errEl.style.display = "block";
+    });
+}
+
+function doLogout(){
+  auth.signOut();
+}
+
+try {
+  auth.onAuthStateChanged(function(user){
+    if (user){
+      document.getElementById("lock-screen").style.display = "none";
+      document.getElementById("admin-app").style.display = "block";
+      document.getElementById("whoami").textContent = user.email;
+      checkIfEmpty();
+      refreshPostList();
+    } else {
+      document.getElementById("lock-screen").style.display = "block";
+      document.getElementById("admin-app").style.display = "none";
+    }
+  });
+} catch (e) {
+  console.error("Firebase did not initialize correctly:", e);
+  document.getElementById("login-error").textContent = "Firebase did not initialize — check the browser console (F12) for details.";
+  document.getElementById("login-error").style.display = "block";
+}
+
+async function checkIfEmpty(){
+  try {
+    const posts = await getCategoryPosts(document.getElementById("category-select").value);
+    // Quick heuristic: check across a couple categories in case this one is empty but others aren't
+    let anyData = posts.length > 0;
+    if (!anyData) {
+      for (const c of CATEGORIES) {
+        const p = await getCategoryPosts(c);
+        if (p.length > 0) { anyData = true; break; }
+      }
+    }
+    document.getElementById("seed-banner").style.display = anyData ? "none" : "block";
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function runSeed(){
+  showToast("Loading original content…");
+  const didSeed = await seedIfEmpty();
+  document.getElementById("seed-banner").style.display = "none";
+  showToast(didSeed ? "Original content loaded." : "Data already exists — nothing to do.");
+  refreshPostList();
+}
+
+let currentCat = "latest-jobs";
+let currentId = null; // null = creating a new post
+
+function autoSlug(){
+  if (currentId === null){ // only auto-slug while creating a NEW post
+    document.getElementById("f-id").value = slugify(document.getElementById("f-title").value);
+  }
+}
+
+function kvToText(pairs){
+  if(!pairs) return "";
+  return pairs.map(function(p){ return p.label + ": " + p.value; }).join("\n");
+}
+function textToKV(text){
+  return text.split("\n").map(function(line){ return line.trim(); }).filter(Boolean).map(function(line){
+    const idx = line.indexOf(":");
+    if (idx === -1) return { label: line, value: "" };
+    return { label: line.slice(0, idx).trim(), value: line.slice(idx+1).trim() };
+  });
+}
+function linesToText(items){ return (items || []).join("\n"); }
+function textToLines(text){ return text.split("\n").map(function(l){return l.trim();}).filter(Boolean); }
+
+async function refreshPostList(){
+  currentCat = document.getElementById("category-select").value;
+  const list = document.getElementById("post-list");
+  list.innerHTML = "Loading…";
+  let posts;
+  try {
+    posts = await getCategoryPosts(currentCat);
+  } catch(e){
+    list.innerHTML = '<div style="font-size:12px;color:#B3261E;">Failed to load: ' + e.message + '</div>';
+    return;
+  }
+  if (posts.length === 0){
+    list.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:8px 6px;">No postings yet.</div>';
+    return;
+  }
+  list.innerHTML = posts.map(function(p){
+    return '<div class="admin-post-item"><span>' + p.title + '</span><span>' +
+      '<button class="edit-btn" onclick="loadPost(\'' + p.id + '\')">Edit</button>' +
+      '<button class="del-btn" onclick="quickDelete(\'' + p.id + '\')">Delete</button>' +
+      '</span></div>';
+  }).join("");
+}
+
+function newPost(){
+  currentId = null;
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-id").value = "";
+  document.getElementById("f-meta").value = "";
+  document.getElementById("f-metaClass").value = "";
+  document.getElementById("f-organization").value = "";
+  document.getElementById("f-author").value = "";
+  document.getElementById("f-postDate").value = "";
+  document.getElementById("f-lastDate").value = "";
+  document.getElementById("f-intro").value = "";
+  document.getElementById("f-content").value = "";
+  document.getElementById("f-quickFacts").value = "";
+  document.getElementById("f-importantDates").value = "";
+  document.getElementById("f-fee").value = "";
+  document.getElementById("f-ageLimit").value = "";
+  document.getElementById("f-vacancy").value = "";
+  document.getElementById("f-howToApply").value = "";
+  document.getElementById("f-selectionProcess").value = "";
+  document.getElementById("f-applyLink").value = "";
+  document.getElementById("f-notificationLink").value = "";
+  document.getElementById("f-officialWebsite").value = "";
+  document.getElementById("preview-link-wrap").style.display = "none";
+}
+
+async function loadPost(id){
+  const post = await getPost(currentCat, id);
+  if (!post) return;
+  currentId = post.id;
+  document.getElementById("f-title").value = post.title || "";
+  document.getElementById("f-id").value = post.id || "";
+  document.getElementById("f-meta").value = post.meta || "";
+  document.getElementById("f-metaClass").value = post.metaClass || "";
+  document.getElementById("f-organization").value = post.organization || "";
+  document.getElementById("f-author").value = post.author || "";
+  document.getElementById("f-postDate").value = post.postDate || "";
+  document.getElementById("f-lastDate").value = post.lastDate || "";
+  document.getElementById("f-intro").value = post.intro || "";
+  document.getElementById("f-content").value = linesToText(post.content);
+  document.getElementById("f-quickFacts").value = kvToText(post.quickFacts);
+  document.getElementById("f-importantDates").value = kvToText(post.importantDates);
+  document.getElementById("f-fee").value = kvToText(post.fee);
+  document.getElementById("f-ageLimit").value = kvToText(post.ageLimit);
+  document.getElementById("f-vacancy").value = kvToText(post.vacancy);
+  document.getElementById("f-howToApply").value = linesToText(post.howToApply);
+  document.getElementById("f-selectionProcess").value = linesToText(post.selectionProcess);
+  document.getElementById("f-applyLink").value = post.applyLink || "";
+  document.getElementById("f-notificationLink").value = post.notificationLink || "";
+  document.getElementById("f-officialWebsite").value = post.officialWebsite || "";
+
+  showPreviewLink(post.id);
+}
+
+function showPreviewLink(id){
+  const wrap = document.getElementById("preview-link-wrap");
+  const link = document.getElementById("preview-link");
+  const detailPage = currentCat === "blog" ? "blog-post.html" : "job-detail.html";
+  link.href = "pages/" + detailPage + "?cat=" + encodeURIComponent(currentCat) + "&id=" + encodeURIComponent(id);
+  wrap.style.display = "inline-block";
+}
+
+async function savePost(){
+  const title = document.getElementById("f-title").value.trim();
+  const id = document.getElementById("f-id").value.trim() || slugify(title);
+  if (!title || !id){
+    showToast("Please enter a title.");
+    return;
+  }
+
+  const post = {
+    id: id,
+    title: title,
+    meta: document.getElementById("f-meta").value.trim(),
+    metaClass: document.getElementById("f-metaClass").value,
+    organization: document.getElementById("f-organization").value.trim(),
+    author: document.getElementById("f-author").value.trim(),
+    postDate: document.getElementById("f-postDate").value.trim(),
+    lastDate: document.getElementById("f-lastDate").value.trim(),
+    intro: document.getElementById("f-intro").value.trim(),
+    content: textToLines(document.getElementById("f-content").value),
+    quickFacts: textToKV(document.getElementById("f-quickFacts").value),
+    importantDates: textToKV(document.getElementById("f-importantDates").value),
+    fee: textToKV(document.getElementById("f-fee").value),
+    ageLimit: textToKV(document.getElementById("f-ageLimit").value),
+    vacancy: textToKV(document.getElementById("f-vacancy").value),
+    howToApply: textToLines(document.getElementById("f-howToApply").value),
+    selectionProcess: textToLines(document.getElementById("f-selectionProcess").value),
+    applyLink: document.getElementById("f-applyLink").value.trim(),
+    notificationLink: document.getElementById("f-notificationLink").value.trim(),
+    officialWebsite: document.getElementById("f-officialWebsite").value.trim()
+  };
+
+  try {
+    await upsertPost(currentCat, post);
+  } catch(e) {
+    showToast("Save failed: " + e.message);
+    return;
+  }
+  currentId = id;
+  document.getElementById("f-id").value = id;
+  await refreshPostList();
+  showPreviewLink(id);
+  showToast("Saved. Refresh the homepage / category page / preview link to see it live.");
+}
+
+async function quickDelete(id){
+  if (!confirm("Delete this posting?")) return;
+  try {
+    await deletePost(currentCat, id);
+  } catch(e) {
+    showToast("Delete failed: " + e.message);
+    return;
+  }
+  if (currentId === id) newPost();
+  await refreshPostList();
+  showToast("Deleted.");
+}
+
+function deleteCurrentPost(){
+  if (!currentId){ showToast("Nothing to delete — this is a new, unsaved post."); return; }
+  quickDelete(currentId);
+}
+
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.display = "block";
+  setTimeout(function(){ toast.style.display = "none"; }, 3200);
+}
+</script>
+
+</body>
+</html>
