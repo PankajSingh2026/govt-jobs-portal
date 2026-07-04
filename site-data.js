@@ -39,7 +39,7 @@ function emptyPost() {
     quickFacts: [], intro: "",
     importantDates: [], fee: [], ageLimit: [], vacancy: [],
     howToApply: [], selectionProcess: [],
-    applyLink: "", notificationLink: "", officialWebsite: "",
+    applyLink: "", notificationLink: "", officialWebsite: "", admitCardLink: "",
     // Blog-only fields (harmless/unused on job-style categories):
     author: "",
     content: "" // HTML string produced by the rich-text editor
