@@ -137,10 +137,13 @@ document.addEventListener("DOMContentLoaded", async function () {
   html += optionalSteps("How to Apply Online", post.howToApply);
   html += optionalSteps("Selection Process", post.selectionProcess);
 
-  if (post.applyLink || post.notificationLink || post.officialWebsite) {
+  if (post.applyLink || post.notificationLink || post.officialWebsite || post.admitCardLink) {
     html += '<div class="info-table-wrap"><table class="links-table">';
     if (post.applyLink) {
       html += '<tr><td>Apply Online</td><td><a class="link-btn" href="' + post.applyLink + '" target="_blank" rel="noopener">Apply Now →</a></td></tr>';
+    }
+    if (post.admitCardLink) {
+      html += '<tr><td>Admit Card</td><td><a class="link-btn secondary" href="' + post.admitCardLink + '" target="_blank" rel="noopener">Download Admit Card</a></td></tr>';
     }
     if (post.notificationLink) {
       html += '<tr><td>Download Official Notification</td><td><a class="link-btn secondary" href="' + post.notificationLink + '" target="_blank" rel="noopener">Download PDF</a></td></tr>';
