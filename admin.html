@@ -118,6 +118,9 @@
       <label>Apply Online link</label>
       <input type="text" id="f-applyLink" placeholder="https://...">
 
+      <label>Admit Card link</label>
+      <input type="text" id="f-admitCardLink" placeholder="https://...">
+
       <label>Notification PDF link</label>
       <input type="text" id="f-notificationLink" placeholder="https://...">
 
@@ -285,6 +288,7 @@ function newPost(){
   document.getElementById("f-howToApply").value = "";
   document.getElementById("f-selectionProcess").value = "";
   document.getElementById("f-applyLink").value = "";
+  document.getElementById("f-admitCardLink").value = "";
   document.getElementById("f-notificationLink").value = "";
   document.getElementById("f-officialWebsite").value = "";
   document.getElementById("preview-link-wrap").style.display = "none";
@@ -312,6 +316,7 @@ async function loadPost(id){
   document.getElementById("f-howToApply").value = linesToText(post.howToApply);
   document.getElementById("f-selectionProcess").value = linesToText(post.selectionProcess);
   document.getElementById("f-applyLink").value = post.applyLink || "";
+  document.getElementById("f-admitCardLink").value = post.admitCardLink || "";
   document.getElementById("f-notificationLink").value = post.notificationLink || "";
   document.getElementById("f-officialWebsite").value = post.officialWebsite || "";
 
@@ -353,6 +358,7 @@ async function savePost(){
     howToApply: textToLines(document.getElementById("f-howToApply").value),
     selectionProcess: textToLines(document.getElementById("f-selectionProcess").value),
     applyLink: document.getElementById("f-applyLink").value.trim(),
+    admitCardLink: document.getElementById("f-admitCardLink").value.trim(),
     notificationLink: document.getElementById("f-notificationLink").value.trim(),
     officialWebsite: document.getElementById("f-officialWebsite").value.trim()
   };
